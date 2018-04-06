@@ -14,6 +14,7 @@
 HWND hwndText;
 HWND hwndSecondaryWindow;
 HWND hwndMainWindow;
+HWND hwndButtonRevive;
 CHAR buffer[100];
 int klikX, klikY, x, y, iCostam;
 int iWindowWidth, iWindowHeight;
@@ -34,16 +35,22 @@ bool bAllMuchasDead;
 
 
 
-void draw(HWND handle, HBITMAP hBitmap, int iX, int iY, int iWidth, int iHeight ) {
+void draw(HWND handle, HBITMAP hBitmap, int iX, int iY, int iWidth, int iHeight, HBITMAP hBitmapAlpha ) {
   HDC hDC; // uchwyt do kontekstu urz¹dzenia 
   hDC = GetDC(handle); 
 
   HDC hDCBitmap;
   hDCBitmap = CreateCompatibleDC(hDC); //Utworzenie kopatybilengo kontekstu  
+  //HDC hDCBitmapAlpha;
+ // hDCBitmapAlpha = CreateCompatibleDC(hDC);
+
+  SelectObject(hDCBitmap, hBitmapAlpha); //Wybranie bitmapy w kontekscie 
+
+    
   
-    SelectObject(hDCBitmap, hBitmap); //Wybranie bitmapy w kontekscie 
-  
-  BitBlt(hDC, iX, iY, iWidth, iHeight, hDCBitmap, 0, 0, SRCCOPY);
+  BitBlt(hDC, iX, iY, iWidth, iHeight, hDCBitmap, 0, 0, SRCPAINT);
+  SelectObject(hDCBitmap, hBitmap); //Wybranie bitmapy w kontekscie 
+  BitBlt(hDC, iX, iY, iWidth, iHeight, hDCBitmap, 0, 0, SRCAND);
   DeleteDC(hDCBitmap); //Usuniecie kontekstu 
   DeleteObject(hBitmap);
  
@@ -51,6 +58,24 @@ void draw(HWND handle, HBITMAP hBitmap, int iX, int iY, int iWidth, int iHeight 
 
   return ;
 }
+void draw(HWND handle, HBITMAP hBitmap, int iX, int iY, int iWidth, int iHeight) {
+  HDC hDC; // uchwyt do kontekstu urz¹dzenia 
+  hDC = GetDC(handle);
+
+  HDC hDCBitmap;
+  hDCBitmap = CreateCompatibleDC(hDC); //Utworzenie kopatybilengo kontekstu  
+
+  SelectObject(hDCBitmap, hBitmap); //Wybranie bitmapy w kontekscie 
+
+  BitBlt(hDC, iX, iY, iWidth, iHeight, hDCBitmap, 0, 0, SRCCOPY);
+  DeleteDC(hDCBitmap); //Usuniecie kontekstu 
+  DeleteObject(hBitmap);
+
+  ReleaseDC(handle, hDC); // Zwolnienie kontekstu urz¹dz
+
+  return;
+}
+
 
 class sMucha
 {
@@ -61,7 +86,7 @@ public:
   int iMuchaPredkoscX, iMuchaPredkoscY;
   int iMuchaSzybkosc, iMuchaAngle;
 
-  void muchaDraw() {
+  void muchaDrawWhite() {
     HBITMAP hBitmapBackgrnd;
     hBitmapBackgrnd = LoadBitmap(hinst, MAKEINTRESOURCE(IDB_BITMAP5));
     draw(hwndMainWindow, hBitmapBackgrnd, this->iMuchaX, this->iMuchaY, this->iMuchaWidth, this->iMuchaHeight);
@@ -109,7 +134,7 @@ INT_PTR CALLBACK DialogProc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPARAM lPara
   {
     
     case WM_INITDIALOG:
-      
+    {
       for (int i = 0; i < iNumOfMuchas; i++) {
         pmchMucha[i] = new sMucha();
         pmchMucha[i]->iMuchaX = rand() % 600;
@@ -129,8 +154,36 @@ INT_PTR CALLBACK DialogProc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPARAM lPara
       HBITMAP hBitmapBackgrnd;
       hBitmapBackgrnd = LoadBitmap(hinst, MAKEINTRESOURCE(IDB_BITMAP1));
       draw(hwndDig, hBitmapBackgrnd, 0, 0, 1500, 1500);
+      
+      
+      hwndButtonRevive = CreateWindow("BUTTON", "Reset", WS_CHILD | BS_PUSHBUTTON | BS_OWNERDRAW, 10,100, 100, 50, hwndDig, NULL, hinst, NULL );
+      
+      HRGN hrgnButton = CreateRoundRectRgn(0, 0, 900, 700, 60, 60);
+      HRGN hrgnElipse = CreateEllipticRgn(200, 200, 150, 100);
+      HRGN hrgnFinal = CreateEllipticRgn(200, 200, 150, 100);
+      CombineRgn(hrgnFinal, hrgnButton, hrgnElipse, RGN_DIFF);
+      
+      POINT pointArray[6];
+      pointArray[0].x = 0;
+      pointArray[0].y = 50;
+      pointArray[1].x = 50;
+      pointArray[1].y = 0;
+      pointArray[2].x = 100;
+      pointArray[2].y = 50;
+      pointArray[3].x = 150;
+      pointArray[3].y = 0;
+      pointArray[4].x = 200;
+      pointArray[4].y = 50;
+      pointArray[5].x = 100;
+      pointArray[5].y = 150;
+      hrgnFinal = CreatePolygonRgn(pointArray, 6, WINDING);
+      SetWindowRgn(hwndDig, hrgnFinal, true);
+
+      //ShowWindow(hwndButtonRevive, SW_SHOW);
+      //UpdateWindow(hwndButtonRevive);
+
     return TRUE;
-                
+    }
     
   case WM_COMMAND:
     switch (HIWORD(wParam)) {
@@ -183,15 +236,18 @@ INT_PTR CALLBACK DialogProc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPARAM lPara
    
 
     HBITMAP hBitmapMucha;
-   
+    HBITMAP hBitmapAlpha;
     for (int i = 0; i < iNumOfMuchas; i++) {
 
       if (pmchMucha[i]->bIsMuchaZywa) {
         hBitmapMucha = LoadBitmap(hinst, MAKEINTRESOURCE(IDB_BITMAP2));
+        hBitmapAlpha = LoadBitmap(hinst, MAKEINTRESOURCE(IDB_BITMAP6));
       }
-      else hBitmapMucha = LoadBitmap(hinst, MAKEINTRESOURCE(IDB_BITMAP3));
-
-      draw(hwndDig, hBitmapMucha, pmchMucha[i]->iMuchaX, pmchMucha[i]->iMuchaY, pmchMucha[i]->iMuchaWidth, pmchMucha[i]->iMuchaHeight); //Wybranie bitmapy w kontekscie 
+      else {
+        hBitmapMucha = LoadBitmap(hinst, MAKEINTRESOURCE(IDB_BITMAP3));
+        hBitmapAlpha = LoadBitmap(hinst, MAKEINTRESOURCE(IDB_BITMAP7));
+      }
+      draw(hwndDig, hBitmapMucha, pmchMucha[i]->iMuchaX, pmchMucha[i]->iMuchaY, pmchMucha[i]->iMuchaWidth, pmchMucha[i]->iMuchaHeight /*, hBitmapAlpha*/); //Wybranie bitmapy w kontekscie 
     }
 
    
@@ -206,7 +262,7 @@ INT_PTR CALLBACK DialogProc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPARAM lPara
 
         if (pmchMucha[i]->bIsMuchaZywa) {
           bAllMuchasDead = false;
-          pmchMucha[i]->muchaDraw();
+          pmchMucha[i]->muchaDrawWhite();
           
           int iRand = rand();
           if (iRand % 4 == 0)      pmchMucha[i]->muchaChange(iRand);

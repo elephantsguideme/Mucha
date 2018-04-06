@@ -45,5 +45,41 @@
     <Image Include="..\source\mucharip.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\source\bitmap6.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="mucha2Maska.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="mucharip2Maska.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="dziuraMaska.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\source\bialeTloDuze.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\source\mucha2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\source\mucharip2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\source\bialetlo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\source\dziura.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\source\mucha2Maska.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\source\mucharip2Maska.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\source\dziuraMaska.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

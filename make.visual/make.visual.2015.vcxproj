@@ -125,11 +125,23 @@
     <ResourceCompile Include="..\source\res.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\source\bialetlo.bmp" />
+    <Image Include="..\source\bialeTloDuze.bmp" />
     <Image Include="..\source\bitmap1.bmp" />
+    <Image Include="..\source\bitmap6.bmp" />
     <Image Include="..\source\bitmapa.bmp" />
+    <Image Include="..\source\dziura.bmp" />
+    <Image Include="..\source\dziuraMaska.bmp" />
     <Image Include="..\source\mucha.bmp" />
+    <Image Include="..\source\mucha2.bmp" />
+    <Image Include="..\source\mucha2Maska.bmp" />
     <Image Include="..\source\mucharip.bmp" />
+    <Image Include="..\source\mucharip2.bmp" />
+    <Image Include="..\source\mucharip2Maska.bmp" />
     <Image Include="bitmapa.bmp" />
+    <Image Include="dziuraMaska.bmp" />
+    <Image Include="mucha2Maska.bmp" />
+    <Image Include="mucharip2Maska.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
